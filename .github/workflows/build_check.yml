@@ -43,6 +43,6 @@ jobs:
 
       - name: Build firmware with local device-ui
         working-directory: firmware
-        run: |
-          pio run -e heltec-v4-tft \
-            --project-option="lib_extra_dirs=${{ github.workspace }}/device-ui"
+        env:
+          PLATFORMIO_LIB_EXTRA_DIRS: ${{ github.workspace }}/device-ui
+        run: pio run -e heltec-v4-tft
