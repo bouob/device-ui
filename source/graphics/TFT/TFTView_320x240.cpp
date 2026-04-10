@@ -6351,6 +6351,10 @@ void TFTView_320x240::updateTime(uint32_t timeVal)
  */
 lv_obj_t *TFTView_320x240::newMessageContainer(uint32_t from, uint32_t to, uint8_t ch)
 {
+    if ((to == UINT32_MAX || from == 0) && ch >= c_max_channels) {
+        ILOG_WARN("newMessageContainer: invalid channel %d", ch);
+        return nullptr;
+    }
     if (to == UINT32_MAX || from == 0) {
         if (channelGroup[ch] != nullptr)
             return channelGroup[ch];
@@ -6468,6 +6472,7 @@ void TFTView_320x240::newMessage(uint32_t from, uint32_t to, uint8_t ch, const c
  */
 void TFTView_320x240::newMessage(uint32_t nodeNum, lv_obj_t *container, uint8_t ch, const char *msg)
 {
+    if (!container) return;
     lv_obj_t *hiddenPanel = lv_obj_create(container);
     lv_obj_set_width(hiddenPanel, lv_pct(100));
     lv_obj_set_height(hiddenPanel, LV_SIZE_CONTENT); /// 50
@@ -6559,6 +6564,7 @@ void TFTView_320x240::restoreMessage(const LogMessage &msg)
         buf[pos + len + msg.length()] = 0;
 
         lv_obj_t *container = newMessageContainer(msg.from, msg.to, msg.ch);
+        if (!container) return;
         lv_obj_add_flag(container, LV_OBJ_FLAG_HIDDEN);
         newMessage(msg.from, container, msg.ch, buf);
     }
@@ -6654,7 +6660,7 @@ void TFTView_320x240::addChat(uint32_t from, uint32_t to, uint8_t ch)
 
     chats[index] = chatBtn;
     updateActiveChats();
-    if (index > c_max_channels) {
+    if (index >= c_max_channels) {
         if (nodes.find(index) != nodes.end())
             applyNodesFilter(index);
     }
