@@ -52,6 +52,7 @@ jobs:
         with:
           name: firmware-heltec-v4-tft-patched
           path: |
-            firmware/.pio/build/heltec-v4-tft/firmware.bin
-            firmware/.pio/build/heltec-v4-tft/firmware.elf
+            firmware/.pio/build/heltec-v4-tft/firmware-heltec-v4-tft-*.bin
+            firmware/.pio/build/heltec-v4-tft/firmware-heltec-v4-tft-*.elf
+            firmware/.pio/build/heltec-v4-tft/littlefs-heltec-v4-tft-*.bin
           retention-days: 7
