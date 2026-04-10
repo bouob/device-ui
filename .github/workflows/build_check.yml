@@ -46,3 +46,12 @@ jobs:
         env:
           PLATFORMIO_LIB_EXTRA_DIRS: ${{ github.workspace }}/device-ui
         run: pio run -e heltec-v4-tft
+
+      - name: Upload firmware binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-heltec-v4-tft-patched
+          path: |
+            firmware/.pio/build/heltec-v4-tft/firmware.bin
+            firmware/.pio/build/heltec-v4-tft/firmware.elf
+          retention-days: 7
