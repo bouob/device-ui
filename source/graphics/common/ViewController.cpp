@@ -642,8 +642,9 @@ void ViewController::restoreTextMessages(void)
     LogMessageEnv msg;
 
     if (log.readNext(msg)) {
-        if ((msg.to == UINT32_MAX || msg.from == 0) && msg.ch >= c_max_channels) {
-            return; // skip persisted messages with invalid channel index
+        if (msg.ch >= c_max_channels) {
+            ILOG_WARN("skipping stored message with invalid channel %d", msg.ch);
+            return;
         }
         msgCounter++;
         msgTotalSize += msg.size();
@@ -938,7 +939,7 @@ bool ViewController::packetReceived(const meshtastic_MeshPacket &p)
             }
         }
         uint32_t time = p.rx_time;
-        if ((p.to == UINT32_MAX || p.from == 0) && p.channel >= c_max_channels) {
+        if (p.channel >= c_max_channels) {
             ILOG_WARN("ignoring message with invalid channel %d", p.channel);
             break;
         }

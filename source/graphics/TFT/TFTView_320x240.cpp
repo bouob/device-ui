@@ -6351,7 +6351,7 @@ void TFTView_320x240::updateTime(uint32_t timeVal)
  */
 lv_obj_t *TFTView_320x240::newMessageContainer(uint32_t from, uint32_t to, uint8_t ch)
 {
-    if ((to == UINT32_MAX || from == 0) && ch >= c_max_channels) {
+    if (ch >= c_max_channels) {
         ILOG_WARN("newMessageContainer: invalid channel %d", ch);
         return nullptr;
     }
