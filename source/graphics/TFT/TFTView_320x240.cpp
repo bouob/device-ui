@@ -6411,6 +6411,10 @@ lv_obj_t *TFTView_320x240::newMessageContainer(uint32_t from, uint32_t to, uint8
  */
 void TFTView_320x240::newMessage(uint32_t from, uint32_t to, uint8_t ch, const char *msg, uint32_t &msgTime, bool restore)
 {
+    if (ch >= c_max_channels) {
+        ILOG_WARN("newMessage(6-arg): invalid channel %d, skipping", ch);
+        return;
+    }
     ILOG_DEBUG("newMessage: from:0x%08x, to:0x%08x, ch:%d, time:%d", from, to, ch, msgTime);
     int pos = 0;
     char buf[284]; // 237 + 4 + 40 + 2 + 1
@@ -6506,6 +6510,10 @@ void TFTView_320x240::newMessage(uint32_t nodeNum, lv_obj_t *container, uint8_t 
  */
 void TFTView_320x240::restoreMessage(const LogMessage &msg)
 {
+    if (msg.ch >= c_max_channels) {
+        ILOG_WARN("restoreMessage: skip invalid ch=%d", msg.ch);
+        return;
+    }
     //((uint8_t *)msg.bytes)[msg._size] = 0;
     // ILOG_DEBUG("restoring msg from:0x%08x, to:0x%08x, ch:%d, time:%d, status:%d, trash:%d, size:%d, '%s'", msg.from, msg.to,
     //           msg.ch, msg.time, (int)msg.status, msg.trashFlag, msg._size, msg.bytes);
@@ -6748,6 +6756,10 @@ void TFTView_320x240::showMessages(uint8_t ch)
         return;
     }
 
+    if (ch >= c_max_channels) {
+        ILOG_WARN("showMessages: invalid channel %d", ch);
+        return;
+    }
     lv_obj_add_flag(activeMsgContainer, LV_OBJ_FLAG_HIDDEN);
     activeMsgContainer = channelGroup[ch];
     if (!activeMsgContainer) {

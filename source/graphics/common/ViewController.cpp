@@ -44,7 +44,9 @@ void ViewController::init(MeshtasticView *gui, IClientBase *_client)
         client->init();
         client->connect();
     }
+    ILOG_INFO("ViewController::init: calling log.init()");
     log.init();
+    ILOG_INFO("ViewController::init: log.init() returned");
 }
 
 /**
@@ -641,7 +643,9 @@ void ViewController::restoreTextMessages(void)
     static uint32_t msgTotalSize = 0;
     LogMessageEnv msg;
 
+    ILOG_INFO("restoreTextMessages: calling readNext");
     if (log.readNext(msg)) {
+        ILOG_INFO("restoreTextMessages: readNext returned ch=%u from=%08x to=%08x", msg.ch, msg.from, msg.to);
         if (msg.ch >= c_max_channels) {
             ILOG_WARN("skipping stored message with invalid channel %d", msg.ch);
             return;

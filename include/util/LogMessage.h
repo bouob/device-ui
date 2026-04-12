@@ -65,6 +65,12 @@ class LogMessageEnv : public LogMessage
     {
         size_t len = read((uint8_t *)&_size, sizeof(LogMessageHeader) - 8);
         if (len) {
+            if (_size >= messagePayloadSize) {
+                // corrupted entry: _size out of range, skip to avoid buffer overflow
+                _size = 0;
+                bytes[0] = 0;
+                return 0;
+            }
             len += read(bytes, _size);
             bytes[_size] = 0;
         } else {
