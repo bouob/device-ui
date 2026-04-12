@@ -30,6 +30,22 @@ jobs:
           path: firmware
           submodules: recursive
 
+      - name: Inject patched device-ui into firmware
+        run: |
+          # PlatformIO lib/ submodule takes priority over PLATFORMIO_LIB_EXTRA_DIRS.
+          # Find device-ui inside the firmware checkout by locating ViewController.cpp,
+          # then replace its root directory with our patched fork.
+          VIEWCTRL=$(find firmware -maxdepth 10 -type f -name "ViewController.cpp" 2>/dev/null | head -1)
+          if [ -n "$VIEWCTRL" ]; then
+            # ViewController.cpp lives at <root>/source/graphics/common/ViewController.cpp
+            UIDIR=$(dirname "$(dirname "$(dirname "$(dirname "$VIEWCTRL")")")")
+            echo "Replacing firmware's device-ui at: $UIDIR"
+            rsync -av --delete --exclude=".git" device-ui/ "$UIDIR/"
+          else
+            echo "WARNING: device-ui not found in firmware submodules"
+            echo "Falling back to PLATFORMIO_LIB_EXTRA_DIRS (may use stale submodule)"
+          fi
+
       - name: Cache PlatformIO
         uses: actions/cache@v4
         with:
@@ -43,8 +59,6 @@ jobs:
 
       - name: Build firmware with local device-ui
         working-directory: firmware
-        env:
-          PLATFORMIO_LIB_EXTRA_DIRS: ${{ github.workspace }}/device-ui
         run: pio run -e heltec-v4-tft
 
       - name: Upload firmware binary
